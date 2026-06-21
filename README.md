@@ -153,6 +153,10 @@ ingestion/embeddings while the GPU serves generation. Record a GPU demo with
 >   libcudart.so.<N>` at vLLM startup.
 > - **8 GB is small.** Default to a 3B AWQ model. For a 7B AWQ model, drop the
 >   context window (`VLLM_MAX_LEN=2048`) and/or `VLLM_GPU_UTIL=0.80`, or you'll OOM.
+> - **`Could not find nvcc` at startup** (driver-only host, no CUDA toolkit):
+>   vLLM tried to JIT-compile FlashInfer's sampler. `serve_vllm.sh` already sets
+>   `VLLM_USE_FLASHINFER_SAMPLER=0` to use the native Torch sampler instead — no
+>   toolkit needed. (Install the full CUDA toolkit only if you want FlashInfer.)
 
 ---
 

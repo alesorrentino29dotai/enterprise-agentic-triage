@@ -16,6 +16,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
+# FlashInfer JIT-compiles its sampling kernel at runtime, which needs the full
+# CUDA toolkit (nvcc). On a driver-only host that fails with
+# "Could not find nvcc". Force vLLM's native Torch sampler (no compilation).
+# Override by exporting VLLM_USE_FLASHINFER_SAMPLER=1 if you install the toolkit.
+export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
+
 # A 3B AWQ model fits comfortably in 8 GB with room for the KV cache. Bump to a
 # 7B AWQ model only if you also lower VLLM_MAX_LEN (e.g. 2048).
 MODEL="${VLLM_MODEL:-Qwen/Qwen2.5-3B-Instruct-AWQ}"
