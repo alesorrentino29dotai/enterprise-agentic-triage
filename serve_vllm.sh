@@ -52,5 +52,11 @@ ARGS=(
 )
 [ -n "${QUANT}" ] && ARGS+=(--quantization "${QUANT}")
 
+# Eager mode (default ON) skips torch.compile + CUDA-graph capture, so the
+# server is ready in ~10s instead of ~2min and reserves less VRAM — ideal for an
+# interactive demo on an 8 GB laptop. Set VLLM_ENFORCE_EAGER=0 for max throughput
+# (slower first start while it compiles and captures graphs).
+[ "${VLLM_ENFORCE_EAGER:-1}" = "1" ] && ARGS+=(--enforce-eager)
+
 echo "  args: ${ARGS[*]}"
 exec vllm serve "${MODEL}" "${ARGS[@]}"

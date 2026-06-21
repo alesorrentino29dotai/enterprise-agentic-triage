@@ -157,6 +157,10 @@ ingestion/embeddings while the GPU serves generation. Record a GPU demo with
 >   vLLM tried to JIT-compile FlashInfer's sampler. `serve_vllm.sh` already sets
 >   `VLLM_USE_FLASHINFER_SAMPLER=0` to use the native Torch sampler instead — no
 >   toolkit needed. (Install the full CUDA toolkit only if you want FlashInfer.)
+> - **Slow first start / seems to hang at "Profiling CUDA graph memory":** that's
+>   torch.compile + CUDA-graph capture (~1–2 min, then cached). `serve_vllm.sh`
+>   runs `--enforce-eager` by default so startup is ~10 s; set
+>   `VLLM_ENFORCE_EAGER=0` to re-enable graphs for maximum throughput.
 
 ---
 
