@@ -1,0 +1,24 @@
+# ── Enterprise Triage & Resolution Agent ─ dependencies ──────────────────────
+# Pinned to compatible ranges; tested with Python 3.10–3.13.
+
+# Web / ingestion layer
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+httpx==0.28.1
+
+# Orchestration (stateful, cyclic agent graph)
+langgraph==0.2.60
+
+# LLM — official Anthropic SDK (Claude Opus 4.8)
+anthropic==0.69.0
+
+# Advanced RAG: vector store + embeddings + re-ranking
+qdrant-client==1.12.1
+sentence-transformers==3.3.1   # bi-encoder (embeddings) + CrossEncoder (re-rank)
+
+# Observability
+rich==13.9.4
+
+# Config
+python-dotenv==1.0.1

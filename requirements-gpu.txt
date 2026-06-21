@@ -1,0 +1,15 @@
+# GPU-only dependencies — install ONLY on the machine that hosts the local LLM
+# (e.g. your RTX 5070 + Ryzen AI 9 box). Do NOT add these to the base
+# requirements.txt; vLLM pulls a large CUDA PyTorch stack.
+#
+# RTX 50-series (Blackwell, sm_120) needs PyTorch built for CUDA 12.8. With uv:
+#
+#   uv pip install -r requirements-gpu.txt --torch-backend=cu128
+#
+# or with pip:
+#
+#   pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128
+#
+# Verify the GPU is visible first:  nvidia-smi
+
+vllm>=0.9.0
