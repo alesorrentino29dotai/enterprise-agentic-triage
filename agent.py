@@ -66,7 +66,7 @@ MODEL_ID = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-8")
 # "heuristic" : force the no-LLM fallback.
 LLM_BACKEND = os.getenv("LLM_BACKEND", "auto").lower()
 VLLM_BASE_URL = os.getenv("VLLM_BASE_URL", "http://127.0.0.1:8001/v1")
-VLLM_MODEL = os.getenv("VLLM_MODEL", "Qwen/Qwen2.5-7B-Instruct-AWQ")
+VLLM_MODEL = os.getenv("VLLM_MODEL", "Qwen/Qwen2.5-3B-Instruct-AWQ")
 VLLM_API_KEY = os.getenv("VLLM_API_KEY", "EMPTY")
 
 EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")

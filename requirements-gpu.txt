@@ -2,14 +2,15 @@
 # (e.g. your RTX 5070 + Ryzen AI 9 box). Do NOT add these to the base
 # requirements.txt; vLLM pulls a large CUDA PyTorch stack.
 #
-# RTX 50-series (Blackwell, sm_120) needs PyTorch built for CUDA 12.8. With uv:
+# RTX 50-series (Blackwell, sm_120): let uv match the CUDA build to your driver.
+# Forcing a CUDA version that differs from the vLLM wheel causes
+# `ImportError: libcudart.so.<N>`. Use auto-detection in a clean venv:
 #
-#   uv pip install -r requirements-gpu.txt --torch-backend=cu128
+#   uv venv .venv-vllm --python 3.12
+#   uv pip install --python .venv-vllm -r requirements-gpu.txt --torch-backend=auto
 #
-# or with pip:
-#
-#   pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128
-#
-# Verify the GPU is visible first:  nvidia-smi
+# `--torch-backend=auto` reads `nvidia-smi` and picks the matching wheel
+# (e.g. cu130 for a CUDA 13.x driver, cu128 for CUDA 12.8). Pin explicitly with
+# --torch-backend=cu130 / cu128 if you must. Verify the GPU first:  nvidia-smi
 
 vllm>=0.9.0

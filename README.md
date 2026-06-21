@@ -122,30 +122,37 @@ Run the reasoning model entirely on your own hardware. vLLM exposes an
 OpenAI-compatible API the agent talks to over HTTP.
 
 ```bash
-# 1. Install the GPU stack on the RTX 5070 host (Blackwell → CUDA 12.8 wheels).
-#    nvidia-smi should show the GPU first.
-uv pip install -r requirements-gpu.txt --torch-backend=cu128
-#    (or: pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128)
+# 1. Install vLLM in its OWN venv, letting uv match CUDA to your driver.
+#    Do NOT force --torch-backend=cu128 — if it differs from the vLLM wheel you
+#    get `ImportError: libcudart.so.<N>`. Auto-detection reads nvidia-smi.
+uv venv .venv-vllm --python 3.12
+uv pip install --python .venv-vllm vllm --torch-backend=auto
 
-# 2. Serve a quantized model that fits 12 GB of VRAM (AWQ 4-bit 7B by default).
+# 2. Serve a quantized model. Default is a 3B AWQ model that fits 8 GB of VRAM
+#    (RTX 5070 Laptop). Activate the vLLM venv so `vllm` is on PATH.
+source .venv-vllm/bin/activate
 ./serve_vllm.sh                       # → http://127.0.0.1:8001/v1
-#    swap the model:  VLLM_MODEL=Qwen/Qwen2.5-3B-Instruct ./serve_vllm.sh
+#    7B on 8 GB: VLLM_MODEL=Qwen/Qwen2.5-7B-Instruct-AWQ VLLM_MAX_LEN=2048 ./serve_vllm.sh
 
-# 3. Point the agent at the local GPU and run the demo.
+# 3. In another terminal, point the agent at the local GPU and run the demo.
+source .venv/bin/activate
 export LLM_BACKEND=vllm
 uvicorn main:app --port 8000 &        # mock REST API for the Action Node
 python demo.py
 ```
 
-The bundled `serve_vllm.sh` is tuned for the RTX 5070: AWQ quantization
-(`awq_marlin`), `--max-model-len 8192`, `--gpu-memory-utilization 0.90`, and
-prefix caching. The Ryzen AI 9 CPU handles ingestion/embeddings while the GPU
-serves generation. Record a GPU demo with `vhs demo_vllm.tape`.
+`serve_vllm.sh` is tuned for the 8 GB RTX 5070 Laptop GPU: AWQ quantization
+(auto-selected from the model name), `--max-model-len 8192`,
+`--gpu-memory-utilization 0.85`, and prefix caching. The Ryzen AI 9 CPU handles
+ingestion/embeddings while the GPU serves generation. Record a GPU demo with
+`vhs demo_vllm.tape`.
 
-> **Notes for RTX 50-series (Blackwell, sm_120):** you need a recent vLLM
-> (≥ 0.9) and a PyTorch build for **CUDA 12.8** — older CUDA wheels won't
-> recognise the GPU. If 12 GB is tight (e.g. you also pin the embedder to the
-> GPU), drop to a 3B model or lower `--gpu-memory-utilization`.
+> **RTX 50-series (Blackwell, sm_120) gotchas:**
+> - **CUDA must match.** Driver CUDA 13.x → install with `--torch-backend=auto`
+>   (or `cu130`); CUDA 12.8 → `cu128`. A mismatch yields `ImportError:
+>   libcudart.so.<N>` at vLLM startup.
+> - **8 GB is small.** Default to a 3B AWQ model. For a 7B AWQ model, drop the
+>   context window (`VLLM_MAX_LEN=2048`) and/or `VLLM_GPU_UTIL=0.80`, or you'll OOM.
 
 ---
 
@@ -222,7 +229,7 @@ All via environment variables (see `.env.example`):
 | `ANTHROPIC_API_KEY` | — | Enables live Claude triage + answers. Absent → heuristic fallback. |
 | `ANTHROPIC_MODEL` | `claude-opus-4-8` | Claude model used for triage and resolution. |
 | `VLLM_BASE_URL` | `http://127.0.0.1:8001/v1` | OpenAI-compatible endpoint of the local vLLM server. |
-| `VLLM_MODEL` | `Qwen/Qwen2.5-7B-Instruct-AWQ` | Model served locally on the GPU. |
+| `VLLM_MODEL` | `Qwen/Qwen2.5-3B-Instruct-AWQ` | Model served locally on the GPU (must match `serve_vllm.sh`). |
 | `EMBED_MODEL` | `all-MiniLM-L6-v2` | Bi-encoder for embeddings. |
 | `RERANK_MODEL` | `ms-marco-MiniLM-L-6-v2` | CrossEncoder for re-ranking. |
 | `MOCK_API_BASE` | `http://127.0.0.1:8000` | Where the Action Node sends mock REST calls. |
