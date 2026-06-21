@@ -9,6 +9,7 @@
 # Sleep values are generous to absorb local inference latency; tune for your GPU.
 
 Output demo_vllm.gif
+Output demo_vllm.mp4
 
 Set Shell bash
 Set FontSize 15

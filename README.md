@@ -19,10 +19,21 @@ Every step is rendered with `rich` for a high-visibility, color-coded event flow
 
 ## Demo
 
+### Local GPU — vLLM on RTX 5070 (fully on-prem, no cloud calls)
+
+![Local GPU demo](demo_vllm.gif)
+
+Triage classification, Qdrant retrieval + CrossEncoder re-ranking, and answer
+generation all run on-device via vLLM serving `Qwen/Qwen2.5-3B-Instruct-AWQ`.
+▶ **Higher-quality video:** [demo_vllm.mp4](demo_vllm.mp4)
+
+### Cloud / heuristic backend
+
 ![Demo](demo.gif)
 
-> Regenerate the recording with [`vhs`](https://github.com/charmbracelet/vhs):
-> `vhs demo.tape`. See [VHS Demo](#vhs-demo) below.
+> Regenerate the recordings with [`vhs`](https://github.com/charmbracelet/vhs):
+> `vhs demo.tape` (cloud/heuristic) or `vhs demo_vllm.tape` (local GPU).
+> See [VHS Demo](#vhs-demo) below.
 
 ---
 
